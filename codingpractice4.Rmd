@@ -3,10 +3,10 @@ title: "codingpractice4"
 author: "Erica Maul"
 date: "2025-02-26"
 output:
-  pdf_document:
-    toc: true
   md_document:
     variant: gfm
+    toc: true
+  pdf_document:
     toc: true
   word_document:
   html_document:
@@ -102,4 +102,22 @@ combinedfigure.stats <- ggarrange(DONplot.stats, X15ADONplot.stats, seedmassplot
 combinedfigure.stats
 ```
 
+# Question 3. Knit your document together in the following formats:
 
+- .docx (word document) OR a [.pdf with a table of contents](codingpractice4.pdf)
+- [Github flavored markdown file](codingpractice4.knit.md)
+
+# Question 4. Push the .docx or .pdf and .md files to GitHub inside a directory called Coding Challenge 4.
+
+  That's where we are right now!
+
+# Question 5. Now edit, commit, and push the README file for your repository and  include the following elements.
+
+- A clickable link in your [README file](README.md) to your GitHub flavored .md file
+- A file tree of your GitHub Repository
+
+  See README link above
+
+# Question 6. Please provide a clickable link to your GitHub
+
+  [Here it is!](https://github.com/emaul2/Coding-Challenge-4.git)
