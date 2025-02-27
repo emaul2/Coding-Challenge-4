@@ -1,0 +1,105 @@
+---
+title: "codingpractice4"
+author: "Erica Maul"
+date: "2025-02-26"
+output:
+  pdf_document:
+    toc: true
+  md_document:
+    variant: gfm
+    toc: true
+  word_document:
+  html_document:
+    toc: true
+---
+[link to souce publication](https://doi.org/10.1094/PDIS-06-21-1253-RE)
+
+# Question 1. Explain the following:
+
+## YAML header
+
+The YAML header begins every R Markdown document. It includes title, author, date, and also details on how the document will be knit (html, pdf, etc.)
+
+## Literate programming
+
+Literate programming is a type of programming documentation that includes explanatory chunks of natural language as well as code. R Markdown files are an example of literate programming.
+
+# Question 2. Take the code you wrote for coding challenge 3 question 5 and incorporate it into your R markdown file. Your final R markdown file should have the following elements.
+
+- At the top of the document, make a clickable link to the manuscript where these data are published. 
+- Read the data using a relative file path with na.strings option set to "na". This means you need to put the Mycotoxin.csv file we have used for the past two weeks into your directory, which git tracks.
+- Make a separate code chunk for the figures plotting the DON data, 15ADON, and seedmass, and one for the three combined using ggarrange().
+
+```{r backgroundinfo, include = FALSE, echo = FALSE}
+library(tidyverse)
+library(ggpubr)
+library(ggrepel)
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+myco.data <- read.csv("MycotoxinData.csv", na.strings = "na")
+str(myco.data)
+myco.data$MassperSeed_mg <- as.numeric(myco.data$MassperSeed_mg)
+myco.data$Treatment <- as.factor(myco.data$Treatment)
+myco.data$Cultivar <- as.factor(myco.data$Cultivar)
+myco.data$BioRep <- as.factor(myco.data$BioRep)
+myco.data$DON <- as.numeric(myco.data$DON)
+myco.data$X15ADON <- as.numeric(myco.data$X15ADON)
+str(myco.data)
+
+myco.data$Treatment <- factor(myco.data$Treatment, levels = c("NTC", "Fg", "Fg + 37", "Fg + 40", "Fg + 70"))
+
+DONplot <- ggplot(myco.data, aes(x = Treatment, y = DON, fill = Cultivar))+
+  theme_classic()+
+  geom_boxplot(outlier.color=NA)+
+  xlab("")+
+  ylab("DON (ppm)")+
+  geom_point(aes(fill=Cultivar), pch = 21, alpha = .6, color = "black", position = position_jitterdodge())+
+  scale_fill_manual(values = c(cbbPalette[[3]], cbbPalette[[4]]))+
+  facet_wrap(~Cultivar)
+
+X15ADONplot <- ggplot(myco.data, aes(x = Treatment, y = X15ADON, fill = Cultivar))+
+  theme_classic()+
+  geom_boxplot(outlier.color=NA)+
+  xlab("")+
+  ylab("15ADON")+
+  geom_point(aes(fill=Cultivar), pch = 21, alpha = .6, color = "black", position = position_jitterdodge())+
+  scale_fill_manual(values = c(cbbPalette[[3]], cbbPalette[[4]]))+
+  facet_wrap(~Cultivar)
+
+seedmassplot <- ggplot(myco.data, aes(x = Treatment, y = MassperSeed_mg, fill = Cultivar))+
+  theme_classic()+
+  geom_boxplot(outlier.color=NA)+
+  xlab("")+
+  ylab("Seed Mass (mg)")+
+  geom_point(aes(fill=Cultivar), pch = 21, alpha = .6, color = "black", position = position_jitterdodge())+
+  scale_fill_manual(values = c(cbbPalette[[3]], cbbPalette[[4]]))+
+  facet_wrap(~Cultivar)
+```
+
+## DON plot
+```{r, warning = FALSE}
+DONplot.stats <- DONplot +
+  geom_pwc(aes(group = Treatment), method = "t.test", label = "p.adj.format")
+DONplot.stats
+```
+
+## X15ADON plot
+```{r, warning = FALSE}
+X15ADONplot.stats <- X15ADONplot +
+  geom_pwc(aes(group=Treatment), method = "t.test", label = "p.adj.format")
+X15ADONplot.stats
+```
+
+## seed mass plot
+```{r, warning = FALSE}
+seedmassplot.stats <- seedmassplot +
+  geom_pwc(aes(group=Treatment), method = "t.test", label = "p.adj.format")
+seedmassplot.stats
+```
+
+## combined plot
+```{r, warning = FALSE}
+combinedfigure.stats <- ggarrange(DONplot.stats, X15ADONplot.stats, seedmassplot.stats, labels = "AUTO", nrow = 1, ncol = 3, common.legend = T)
+combinedfigure.stats
+```
+
+
